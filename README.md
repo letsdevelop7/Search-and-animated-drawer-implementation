@@ -1,2 +1,2 @@
-# Search-and-animated-drawer-implementation
-Tutorial and source code for implementing Favorite, Search and animated drawer features
+# Search festure implementation
+source code for implementing Favorite and Search features
