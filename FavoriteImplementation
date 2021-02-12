@@ -45,9 +45,6 @@ var likedQuotes = DBProvider.db.getAllQuotes();  //Fetches All Favorite Quote an
                                   index,
                                       (context, animation) =>
                                       slideAt(index, animation, quote: quote));// this is the method which you are going to return in itemBuilder method of AnimatedList widget.
-                              Future.delayed(Duration(seconds: 1), () {
-                                _globalKey.removeAt(index);
-                              });
                             },
                             
                             
