@@ -1,0 +1,41 @@
+import 'dart:convert';
+import 'package:flutter/material.dart';
+// import DBProvider
+import 'package:hindi_shayri/folderName/sqliteDB/DBProvider.dart';
+
+Quote clientFromJson(String str) {
+  final jsonData = json.decode(str);
+  return Quote.fromMap(jsonData);
+}
+
+String clientToJson(Quote data) {
+  final dyn = data.toMap();
+  return json.encode(dyn);
+}
+
+class Quote {
+  String quote;
+  String image;
+
+  Quote({@required this.quote,@required this.image});
+
+  Future<bool> isLiked() async {
+    return await (DBProvider.db.getQuote(quote)) != null;
+  }
+
+  like() {
+    DBProvider.db.createLikedQuote(this);
+  }
+
+  unLike() {
+    DBProvider.db.deleteQuotes(quote);
+  }
+
+  factory Quote.fromMap(Map<String, dynamic> json) =>
+      Quote(quote: json["quote"], image: json['image']);
+
+  Map<String, dynamic> toMap() => {
+        "quote": quote,
+        "image": image,
+      };
+}
