@@ -1,0 +1,55 @@
+//learn to implement favorite feature
+
+
+
+var likedQuotes = DBProvider.db.getAllQuotes();  //Fetches All Favorite Quote and you can shows all those quotes in animatedlist or listview.
+
+
+
+
+// from listview's index you can find current likedQuote(quote object in this case) and simply copy and paste this code for favorite button to work. here we are using fontawesomeicon package for icons.
+                    StatefulBuilder(builder: (context, updateStatus) {                     
+                     return FutureBuilder(
+                          future: quote.isLiked(),
+                          builder: (context, snapshot) {
+                            return IconButton(
+                              icon: Icon(
+                              //if quote is saved in out sqlite DB then it will show solid filled heart icon other outlined heart icon
+                                snapshot.hasData && snapshot.data
+                                    ? FontAwesomeIcons.solidHeart
+                                    : FontAwesomeIcons.heart,
+                                size: 30,
+                                color: Colors.pink,
+                              ),
+                              onPressed: () {
+                              //check if the quote is available in our db or not
+                                quote.isLiked().then((value) {
+                                  updateStatus(() {
+                                  // if yes then remove quote from db and update only current widget so that other widget do not lose its state. for this we are using StatefulBuilder.
+                                    if (value)
+                                      quote.unLike();
+                                    else
+                                      quote.like(); // if not then remove quote from db and update current widget.
+                                  });
+                                });
+                              },
+                            );
+                          });
+                         }); 
+
+//if u want to remove the shayari from favorite page if user unlikes the shayari like my hindi shayari app then learn about AnimatedList Widget and paste with code in onpress method when user unlikes the shayari.
+                         
+                         onPressed: () {
+                              quote.unLike();
+                              _listKey.currentState.removeItem(
+                                  index,
+                                      (context, animation) =>
+                                      slideAt(index, animation, quote: quote));// this is the method which you are going to return in itemBuilder method of AnimatedList widget.
+                              Future.delayed(Duration(seconds: 1), () {
+                                _globalKey.removeAt(index);
+                              });
+                            },
+                            
+                            
+                            
+                            
