@@ -1,0 +1,67 @@
+import 'dart:io';
+
+import 'package:hindi_shayri/modals/Quote.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:sqflite/sqflite.dart';
+import 'package:path/path.dart';
+
+class DBProvider {
+  DBProvider._();
+
+  static final DBProvider db = DBProvider._();
+  final DATABASE_NAME = "LikedQuote";
+
+  static Database _database;
+
+  Future<Database> get database async {
+    if (_database != null) return _database;
+
+    // if _database is null we instantiate it
+    _database = await initDB();
+    return _database;
+  }
+
+  initDB() async {
+    Directory documentsDirectory = await getApplicationDocumentsDirectory();
+    String path = join(documentsDirectory.path, "TestDB.db");
+    return await openDatabase(path, version: 1, onOpen: (db) {},
+        onCreate: (Database db, int version) async {
+      await db.execute("CREATE TABLE LikedQuote ("
+          "id INTEGER PRIMARY KEY,"
+          "quote TEXT,"
+          "image TEXT"
+          ")");
+    });
+  }
+
+  createLikedQuote(Quote quote) async {
+    final db = await database;
+    var res = await db.insert(DATABASE_NAME, quote.toMap());
+    return res;
+  }
+
+  Future getQuote(String quote) async {
+    final db = await database;
+    var res =
+        await db.query(DATABASE_NAME, where: "quote = ?", whereArgs: [quote]);
+    return res.isNotEmpty ? Quote.fromMap(res.first) : null;
+  }
+
+  Future<List<Quote>> getAllQuotes() async {
+    final db = await database;
+    var res = await db.query(DATABASE_NAME);
+    List<Quote> list =
+        res.isNotEmpty ? res.map((c) => Quote.fromMap(c)).toList().reversed.toList() : [];
+    return list;
+  }
+
+  deleteQuote(String quote) async {
+    final db = await database;
+    db.delete(DATABASE_NAME, where: "quote = ?", whereArgs: [quote]);
+  }
+
+  deleteAll() async {
+    final db = await database;
+    db.rawDelete("Delete * from " + DATABASE_NAME);
+  }
+}
